@@ -1,5 +1,5 @@
 use ffi::*;
-use libc::c_uint;
+use std::os::raw::c_uint;
 
 bitflags! {
     pub struct Flags: c_uint {

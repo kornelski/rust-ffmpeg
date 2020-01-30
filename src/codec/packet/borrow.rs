@@ -3,7 +3,7 @@ use std::ptr;
 
 use super::Ref;
 use ffi::*;
-use libc::c_int;
+use std::os::raw::c_int;
 
 pub struct Borrow<'a> {
     packet: AVPacket,

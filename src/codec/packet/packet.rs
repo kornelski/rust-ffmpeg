@@ -4,7 +4,7 @@ use std::slice;
 
 use super::{Borrow, Flags, Mut, Ref, SideData};
 use ffi::*;
-use libc::c_int;
+use std::os::raw::c_int;
 use {format, Error, Rational};
 
 pub struct Packet(AVPacket);

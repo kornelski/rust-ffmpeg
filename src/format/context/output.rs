@@ -117,7 +117,7 @@ impl Output {
 
                 // chapters array will be freed by `avformat_free_context`
                 av_dynarray_add(
-                    &mut (*self.as_mut_ptr()).chapters as *mut _ as *mut libc::c_void,
+                    &mut (*self.as_mut_ptr()).chapters as *mut _ as *mut std::os::raw::c_void,
                     &mut nb_chapters,
                     ptr,
                 );

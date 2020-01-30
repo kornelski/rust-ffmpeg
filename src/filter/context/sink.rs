@@ -1,6 +1,6 @@
 use super::Context;
 use ffi::*;
-use libc::c_int;
+use std::os::raw::c_int;
 use {Error, Frame};
 
 pub struct Sink<'a> {

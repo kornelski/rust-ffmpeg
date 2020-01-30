@@ -1,5 +1,5 @@
 use ffi::*;
-use libc::c_ulonglong;
+use std::os::raw::c_ulonglong;
 
 bitflags! {
     pub struct ChannelLayout: c_ulonglong {

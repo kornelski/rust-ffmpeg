@@ -97,7 +97,7 @@ impl Audio {
     #[inline]
     pub fn set_rate(&mut self, value: u32) {
         unsafe {
-            av_frame_set_sample_rate(self.as_mut_ptr(), value as c_int);
+            av_frame_set_sample_rate(self.as_mut_ptr(), value as _);
         }
     }
 
@@ -109,7 +109,7 @@ impl Audio {
     #[inline]
     pub fn set_samples(&mut self, value: usize) {
         unsafe {
-            (*self.as_mut_ptr()).nb_samples = value as c_int;
+            (*self.as_mut_ptr()).nb_samples = value as _;
         }
     }
 

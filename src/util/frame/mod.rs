@@ -11,7 +11,7 @@ pub mod flag;
 pub use self::flag::Flags;
 
 use ffi::*;
-use libc::c_int;
+use std::os::raw::c_int;
 use {Dictionary, DictionaryRef};
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]

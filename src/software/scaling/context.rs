@@ -2,7 +2,7 @@ use std::ptr;
 
 use super::Flags;
 use ffi::*;
-use libc::c_int;
+use std::os::raw::c_int;
 use util::format;
 use {frame, Error};
 

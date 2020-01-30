@@ -70,20 +70,20 @@ impl Encoder {
 
     pub fn set_tolerance(&mut self, value: usize) {
         unsafe {
-            (*self.as_mut_ptr()).bit_rate_tolerance = value as c_int;
+            (*self.as_mut_ptr()).bit_rate_tolerance = value as _;
         }
     }
 
     pub fn set_quality(&mut self, value: usize) {
         unsafe {
-            (*self.as_mut_ptr()).global_quality = value as c_int;
+            (*self.as_mut_ptr()).global_quality = value as _;
         }
     }
 
     pub fn set_compression(&mut self, value: Option<usize>) {
         unsafe {
             if let Some(value) = value {
-                (*self.as_mut_ptr()).compression_level = value as c_int;
+                (*self.as_mut_ptr()).compression_level = value as _;
             } else {
                 (*self.as_mut_ptr()).compression_level = -1;
             }

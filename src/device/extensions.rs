@@ -4,7 +4,7 @@ use std::ptr;
 use device;
 use ffi::*;
 use format::context::common::Context;
-use libc::c_int;
+use std::os::raw::c_int;
 use Error;
 
 impl Context {

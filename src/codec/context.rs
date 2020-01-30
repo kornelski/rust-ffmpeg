@@ -5,7 +5,7 @@ use super::decoder::Decoder;
 use super::encoder::Encoder;
 use super::{threading, Compliance, Debug, Flags, Id, Parameters};
 use ffi::*;
-use libc::c_int;
+use std::os::raw::c_int;
 use media;
 use {Codec, Error};
 

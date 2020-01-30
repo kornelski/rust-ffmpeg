@@ -5,7 +5,7 @@ use std::slice;
 use super::Frame;
 use color;
 use ffi::*;
-use libc::c_int;
+use std::os::raw::c_int;
 use picture;
 use util::chroma;
 use util::format;

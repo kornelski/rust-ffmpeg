@@ -1,6 +1,6 @@
 use super::Id;
 use ffi::*;
-use libc::c_int;
+use std::os::raw::c_int;
 
 #[allow(non_camel_case_types)]
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]

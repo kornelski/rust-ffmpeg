@@ -2,7 +2,7 @@ use std::ops::{Deref, DerefMut};
 use std::ptr;
 
 use ffi::*;
-use libc::{c_float, c_int};
+use std::os::raw::{c_float, c_int};
 
 use super::Encoder as Super;
 use super::{Comparison, Decision, MotionEstimation, Prediction};

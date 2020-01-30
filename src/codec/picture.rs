@@ -4,7 +4,6 @@ use std::slice;
 
 use ffi::*;
 use format;
-use libc::{c_int, size_t};
 use Error;
 
 pub struct Picture<'a> {
@@ -49,7 +48,7 @@ impl<'a> Picture<'a> {
 impl<'a> Picture<'a> {
     pub fn size(format: format::Pixel, width: u32, height: u32) -> Result<usize, Error> {
         unsafe {
-            match avpicture_get_size(format.into(), width as c_int, height as c_int) {
+            match avpicture_get_size(format.into(), width as _, height as _) {
                 v if v >= 0 => Ok(v as usize),
                 e => Err(Error::from(e)),
             }
@@ -58,9 +57,9 @@ impl<'a> Picture<'a> {
 
     pub fn new(format: format::Pixel, width: u32, height: u32) -> Result<Self, Error> {
         unsafe {
-            let ptr = av_malloc(mem::size_of::<AVPicture>() as size_t) as *mut AVPicture;
+            let ptr = av_malloc(mem::size_of::<AVPicture>() as usize) as *mut AVPicture;
 
-            match avpicture_alloc(ptr, format.into(), width as c_int, height as c_int) {
+            match avpicture_alloc(ptr, format.into(), width as _, height as _) {
                 0 => Ok(Picture {
                     ptr,
 
@@ -94,10 +93,10 @@ impl<'a> Picture<'a> {
             match avpicture_layout(
                 self.ptr,
                 self.format.into(),
-                self.width as c_int,
-                self.height as c_int,
+                self.width as _,
+                self.height as _,
                 out.as_mut_ptr(),
-                out.len() as c_int,
+                out.len() as _,
             ) {
                 s if s >= 0 => Ok(s as usize),
                 e => Err(Error::from(e)),
@@ -116,10 +115,10 @@ impl<'a> Picture<'a> {
             match avpicture_layout(
                 self.as_ptr(),
                 format.into(),
-                width as c_int,
-                height as c_int,
+                width as _,
+                height as _,
                 out.as_mut_ptr(),
-                out.len() as c_int,
+                out.len() as _,
             ) {
                 s if s >= 0 => Ok(s as usize),
                 e => Err(Error::from(e)),
@@ -137,8 +136,8 @@ impl<'a> Picture<'a> {
                 source.as_mut_ptr(),
                 self.as_ptr(),
                 self.format.into(),
-                top as c_int,
-                left as c_int,
+                top as _,
+                left as _,
             ) {
                 0 => Ok(()),
                 e => Err(Error::from(e)),
@@ -201,8 +200,8 @@ impl<'a> Clone for Picture<'a> {
                 self.as_mut_ptr(),
                 source.as_ptr(),
                 source.format.into(),
-                source.width as c_int,
-                source.height as c_int,
+                source.width as _,
+                source.height as _,
             );
         }
     }

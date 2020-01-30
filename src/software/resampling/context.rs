@@ -50,7 +50,7 @@ impl Context {
                 dst_rate as c_int,
                 src_channel_layout.bits() as i64,
                 src_format.into(),
-                src_rate as c_int,
+                src_rate as _,
                 0,
                 ptr::null_mut(),
             );

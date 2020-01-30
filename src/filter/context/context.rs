@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use super::{Sink, Source};
 use ffi::*;
-use libc::c_void;
+use std::os::raw::c_void;
 use {format, option, ChannelLayout};
 
 pub struct Context<'a> {

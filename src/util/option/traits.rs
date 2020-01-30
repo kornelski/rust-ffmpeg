@@ -7,6 +7,7 @@ use ffi::*;
 use libc::{c_int, c_void};
 use util::format;
 use {ChannelLayout, Error, Rational};
+use std::os::raw::c_void;
 
 macro_rules! check {
     ($expr:expr) => {
@@ -31,7 +32,7 @@ pub trait Settable: Target {
                 self.as_mut_ptr(),
                 name.as_ptr(),
                 value as *const _ as *const _,
-                mem::size_of::<T>() as c_int,
+                mem::size_of::<T>() as _,
                 AV_OPT_SEARCH_CHILDREN
             ))
         }
@@ -97,8 +98,8 @@ pub trait Settable: Target {
             check!(av_opt_set_image_size(
                 self.as_mut_ptr(),
                 name.as_ptr(),
-                w as c_int,
-                h as c_int,
+                w as _,
+                h as _,
                 AV_OPT_SEARCH_CHILDREN
             ))
         }

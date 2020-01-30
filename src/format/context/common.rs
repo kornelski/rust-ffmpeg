@@ -4,7 +4,7 @@ use std::rc::Rc;
 
 use super::destructor::{self, Destructor};
 use ffi::*;
-use libc::{c_int, c_uint};
+use std::os::raw::{c_int, c_uint};
 use {media, Chapter, ChapterMut, DictionaryRef, Stream, StreamMut};
 
 pub struct Context {
