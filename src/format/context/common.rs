@@ -41,7 +41,7 @@ impl Context {
         'a: 'b,
     {
         unsafe {
-            if index >= (*self.as_ptr()).nb_streams as usize {
+            if index >= self.nb_streams() as usize {
                 None
             } else {
                 Some(Stream::wrap(self, index))
@@ -54,7 +54,7 @@ impl Context {
         'a: 'b,
     {
         unsafe {
-            if index >= (*self.as_ptr()).nb_streams as usize {
+            if index >= self.nb_streams() as usize {
                 None
             } else {
                 Some(StreamMut::wrap(self, index))
@@ -78,6 +78,7 @@ impl Context {
         unsafe { (*self.as_ptr()).duration }
     }
 
+    #[inline]
     pub fn nb_chapters(&self) -> u32 {
         unsafe { (*self.as_ptr()).nb_chapters }
     }
@@ -87,7 +88,7 @@ impl Context {
         'a: 'b,
     {
         unsafe {
-            if index >= (*self.as_ptr()).nb_chapters as usize {
+            if index >= self.nb_chapters() as usize {
                 None
             } else {
                 Some(Chapter::wrap(self, index))
@@ -100,7 +101,7 @@ impl Context {
         'a: 'b,
     {
         unsafe {
-            if index >= (*self.as_ptr()).nb_chapters as usize {
+            if index >= self.nb_chapters() as usize {
                 None
             } else {
                 Some(ChapterMut::wrap(self, index))
@@ -222,7 +223,7 @@ impl<'a> Iterator for StreamIter<'a> {
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
         unsafe {
-            if self.current >= (*self.context.as_ptr()).nb_streams {
+            if self.current >= self.context.nb_streams() {
                 return None;
             }
 
@@ -233,15 +234,13 @@ impl<'a> Iterator for StreamIter<'a> {
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
-        unsafe {
-            let length = (*self.context.as_ptr()).nb_streams as usize;
+        let length = self.context.nb_streams() as usize;
 
             (
                 length - self.current as usize,
                 Some(length - self.current as usize),
             )
         }
-    }
 }
 
 impl<'a> ExactSizeIterator for StreamIter<'a> {}
@@ -264,13 +263,12 @@ impl<'a> Iterator for StreamIterMut<'a> {
     type Item = StreamMut<'a>;
 
     fn next(&mut self) -> Option<<Self as Iterator>::Item> {
-        unsafe {
-            if self.current >= (*self.context.as_ptr()).nb_streams {
+        if self.current >= self.context.nb_streams() {
                 return None;
             }
-
             self.current += 1;
 
+        unsafe {
             Some(StreamMut::wrap(
                 mem::transmute_copy(&self.context),
                 (self.current - 1) as usize,
@@ -279,15 +277,13 @@ impl<'a> Iterator for StreamIterMut<'a> {
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
-        unsafe {
-            let length = (*self.context.as_ptr()).nb_streams as usize;
+        let length = self.context.nb_streams() as usize;
 
             (
                 length - self.current as usize,
                 Some(length - self.current as usize),
             )
         }
-    }
 }
 
 impl<'a> ExactSizeIterator for StreamIterMut<'a> {}
