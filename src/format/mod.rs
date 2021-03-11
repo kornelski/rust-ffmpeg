@@ -16,6 +16,7 @@ pub mod network;
 
 use std::{
 	ffi::{CStr, CString},
+	path::Path,
 	ptr,
 	str::from_utf8_unchecked,
 };
@@ -52,10 +53,22 @@ pub fn license() -> &'static str {
 	unsafe { from_utf8_unchecked(CStr::from_ptr(avformat_license()).to_bytes()) }
 }
 
-pub fn open(path: impl AsRef<str>, format: &Format) -> Result<Context, Error> {
+#[cfg(unix)]
+fn from_path(path: &Path) -> CString {
+	use std::os::unix::ffi::OsStrExt;
+
+	CString::new(path.as_os_str().as_bytes()).unwrap()
+}
+
+#[cfg(not(unix))]
+fn from_path(path: &Path) -> CString {
+	CString::new(path.to_str().unwrap()).unwrap()
+}
+
+pub fn open<P: AsRef<Path>>(path: P, format: &Format) -> Result<Context, Error> {
 	unsafe {
 		let mut ps = ptr::null_mut();
-		let path = CString::new(path.as_ref()).unwrap();
+		let path = from_path(path.as_ref());
 
 		match *format {
 			Format::Input(ref format) => match avformat_open_input(
@@ -89,14 +102,14 @@ pub fn open(path: impl AsRef<str>, format: &Format) -> Result<Context, Error> {
 	}
 }
 
-pub fn open_with(
-	path: impl AsRef<str>,
+pub fn open_with<P: AsRef<Path>>(
+	path: P,
 	format: &Format,
 	options: Dictionary,
 ) -> Result<Context, Error> {
 	unsafe {
 		let mut ps = ptr::null_mut();
-		let path = CString::new(path.as_ref()).unwrap();
+		let path = from_path(path.as_ref());
 		let mut opts = options.disown();
 
 		match *format {
@@ -132,10 +145,10 @@ pub fn open_with(
 	}
 }
 
-pub fn input(path: impl AsRef<str>) -> Result<context::Input, Error> {
+pub fn input<P: AsRef<Path>>(path: P) -> Result<context::Input, Error> {
 	unsafe {
 		let mut ps = ptr::null_mut();
-		let path = CString::new(path.as_ref()).unwrap();
+		let path = from_path(path.as_ref());
 
 		match avformat_open_input(&mut ps, path.as_ptr(), ptr::null_mut(), ptr::null_mut()) {
 			0 => match avformat_find_stream_info(ps, ptr::null_mut()) {
@@ -151,13 +164,13 @@ pub fn input(path: impl AsRef<str>) -> Result<context::Input, Error> {
 	}
 }
 
-pub fn input_with_dictionary(
-	path: impl AsRef<str>,
+pub fn input_with_dictionary<P: AsRef<Path>>(
+	path: P,
 	options: Dictionary,
 ) -> Result<context::Input, Error> {
 	unsafe {
 		let mut ps = ptr::null_mut();
-		let path = CString::new(path.as_ref()).unwrap();
+		let path = from_path(path.as_ref());
 		let mut opts = options.disown();
 		let res = avformat_open_input(&mut ps, path.as_ptr(), ptr::null_mut(), &mut opts);
 
@@ -177,13 +190,13 @@ pub fn input_with_dictionary(
 	}
 }
 
-pub fn input_with_interrupt(
-	path: impl AsRef<str>,
+pub fn input_with_interrupt<P: AsRef<Path>>(
+	path: P,
 	closure: impl FnMut() -> bool,
 ) -> Result<context::Input, Error> {
 	unsafe {
 		let mut ps = avformat_alloc_context();
-		let path = CString::new(path.as_ref()).unwrap();
+		let path = from_path(path.as_ref());
 		(*ps).interrupt_callback = interrupt::new(Box::new(closure)).interrupt;
 
 		match avformat_open_input(&mut ps, path.as_ptr(), ptr::null_mut(), ptr::null_mut()) {
@@ -200,10 +213,10 @@ pub fn input_with_interrupt(
 	}
 }
 
-pub fn output(path: impl AsRef<str>) -> Result<context::Output, Error> {
+pub fn output<P: AsRef<Path>>(path: P) -> Result<context::Output, Error> {
 	unsafe {
 		let mut ps = ptr::null_mut();
-		let path = CString::new(path.as_ref()).unwrap();
+		let path = from_path(path.as_ref());
 
 		match avformat_alloc_output_context2(&mut ps, ptr::null_mut(), ptr::null(), path.as_ptr()) {
 			0 => match avio_open(&mut (*ps).pb, path.as_ptr(), AVIO_FLAG_WRITE) {
@@ -216,10 +229,10 @@ pub fn output(path: impl AsRef<str>) -> Result<context::Output, Error> {
 	}
 }
 
-pub fn output_with(path: impl AsRef<str>, options: Dictionary) -> Result<context::Output, Error> {
+pub fn output_with<P: AsRef<Path>>(path: P, options: Dictionary) -> Result<context::Output, Error> {
 	unsafe {
 		let mut ps = ptr::null_mut();
-		let path = CString::new(path.as_ref()).unwrap();
+		let path = from_path(path.as_ref());
 		let mut opts = options.disown();
 
 		match avformat_alloc_output_context2(&mut ps, ptr::null_mut(), ptr::null(), path.as_ptr()) {
@@ -245,10 +258,10 @@ pub fn output_with(path: impl AsRef<str>, options: Dictionary) -> Result<context
 	}
 }
 
-pub fn output_as(path: impl AsRef<str>, format: &str) -> Result<context::Output, Error> {
+pub fn output_as<P: AsRef<Path>>(path: P, format: &str) -> Result<context::Output, Error> {
 	unsafe {
 		let mut ps = ptr::null_mut();
-		let path = CString::new(path.as_ref()).unwrap();
+		let path = from_path(path.as_ref());
 		let format = CString::new(format).unwrap();
 
 		match avformat_alloc_output_context2(&mut ps, ptr::null_mut(), format.as_ptr(), path.as_ptr()) {
@@ -262,14 +275,14 @@ pub fn output_as(path: impl AsRef<str>, format: &str) -> Result<context::Output,
 	}
 }
 
-pub fn output_as_with(
-	path: impl AsRef<str>,
+pub fn output_as_with<P: AsRef<Path>>(
+	path: P,
 	format: &str,
 	options: Dictionary,
 ) -> Result<context::Output, Error> {
 	unsafe {
 		let mut ps = ptr::null_mut();
-		let path = CString::new(path.as_ref()).unwrap();
+		let path = from_path(path.as_ref());
 		let format = CString::new(format).unwrap();
 		let mut opts = options.disown();
 
